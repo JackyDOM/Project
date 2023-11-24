@@ -74,6 +74,7 @@ function HomeCategory() {
           </div>
         ))}
       </div>
+      <p>Hello E-BOOKS</p>
     </div>
   );
 }
