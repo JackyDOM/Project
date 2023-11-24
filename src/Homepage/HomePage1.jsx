@@ -63,7 +63,9 @@ function HomePage1() {
       <ul className='flex flex-row gap-8 overflow-y-auto'>
       {
         list.map((item)=>(
-          <li className='px-9 py-2 cursor-pointer bg-gray-800 rounded-full
+          <li 
+          key={item}
+          className='px-9 py-2 cursor-pointer bg-gray-800 rounded-full
            text-white mt-2 whitespace-nowrap shadow-lg shadow-gray-600/50'>
             {item}
           </li>
