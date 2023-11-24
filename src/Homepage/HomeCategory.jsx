@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { collection, doc, getDocs, addDoc } from 'firebase/firestore';
 import { db } from '../firebase';
-//import Carts from './Carts';
 
-function HomeCategory( {goto} ) {
+function HomeCategory() {
   const [documents, setDocuments] = useState([]);
-  //const [cart, setCart] = useState([]);
+  const [openDescriptionIndex, setOpenDescriptionIndex] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,8 +28,11 @@ function HomeCategory( {goto} ) {
     fetchData();
   }, []);
 
+  const toggleDescription = (index) => {
+    setOpenDescriptionIndex((prevIndex) => (prevIndex === index ? null : index));
+  };
+
   const addToCart = async (document) => {
-    // Add the selected item to the 'Carts' collection in Firebase
     try {
       const cartsCollectionRef = collection(db, 'Carts');
       await addDoc(cartsCollectionRef, document);
@@ -51,7 +53,15 @@ function HomeCategory( {goto} ) {
               src={document.ImageBook}
               alt="book"
             />
-            <p className="text-gray-700 mb-2">Description: {document.decs}</p>
+            <button
+              className="text-blue-500 underline mb-2 focus:outline-none"
+              onClick={() => toggleDescription(index)}
+            >
+              Description
+            </button>
+            {openDescriptionIndex === index && (
+              <p className="text-gray-700 mb-2">Description: {document.decs}</p>
+            )}
             <p className="font-semibold text-lg mb-2">Title: {document.title}</p>
             <p className="text-gray-600 mb-4">Price: {document.price}</p>
             <button
@@ -64,7 +74,6 @@ function HomeCategory( {goto} ) {
           </div>
         ))}
       </div>
-      {/*<Carts cart={cart}/>*/}
     </div>
   );
 }
