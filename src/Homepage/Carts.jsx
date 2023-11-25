@@ -6,13 +6,11 @@ function Carts() {
   const [cart, setCart] = useState([]);
 
   useEffect(() => {
-    // Fetch the cart data from Firebase when the component mounts
     const fetchCartData = async () => {
       try {
         const cartsCollectionRef = collection(db, 'Carts');
         const snapshot = await getDocs(cartsCollectionRef);
 
-        // Extract the cart items from the snapshot
         const cartItems = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
@@ -31,8 +29,7 @@ function Carts() {
       const cartItemRef = doc(db, 'Carts', itemId);
       await deleteDoc(cartItemRef);
       alert('Item deleted from cart!');
-      
-      // Update the local state to reflect the change
+
       setCart(prevCart => prevCart.filter(item => item.id !== itemId));
     } catch (error) {
       console.error('Error deleting item from cart:', error);
@@ -46,7 +43,6 @@ function Carts() {
         quantity: (cart.find(item => item.id === itemId)?.quantity || 1) + 1,
       });
 
-      // Update the local state to reflect the change
       setCart(prevCart =>
         prevCart.map(item =>
           item.id === itemId ? { ...item, quantity: (item.quantity || 1) + 1 } : item
@@ -67,7 +63,6 @@ function Carts() {
           quantity: currentQuantity - 1,
         });
 
-        // Update the local state to reflect the change
         setCart(prevCart =>
           prevCart.map(item =>
             item.id === itemId ? { ...item, quantity: currentQuantity - 1 } : item
@@ -79,48 +74,49 @@ function Carts() {
     }
   };
 
-  // Calculate total price considering the quantity
   const total = cart.reduce((acc, item) => acc + parseInt(item.price, 10) * (item.quantity || 1), 0);
 
   return (
-    <div>
-      <h2>Shopping Cart</h2>
-      <div>
-        {cart.map((item, index) => (
-          <div key={index}>
+    <div className="container mx-auto my-8 p-4 bg-white shadow-md">
+      <h2 className="text-3xl font-semibold mb-4">Shopping Cart</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {cart.map(item => (
+          <div key={item.id} className="bg-gray-100 p-4 rounded-md shadow-md">
             <img
               src={item.ImageBook}
               alt="book"
-              style={{ width: '100px', height: '100px', margin: '5px' }}
+              className="h-32 object-cover mb-4"
             />
-            <p>Title: {item.title}</p>
-            <p>Price: {item.price}</p>
-            <p>Quantity: {item.quantity || 1}</p>
-            <button
-              onClick={() => handleIncrementQuantity(item.id)}
-              className="bg-green-500 hover:bg-green-700 active:bg-blue-800
-              text-white font-bold py-2 px-4 rounded mr-2"
-            >
-              Increment
-            </button>
-            <button
-              onClick={() => handleDecrementQuantity(item.id)}
-              className="bg-yellow-500 hover:bg-yellow-700 active:bg-blue-800
-              text-white font-bold py-2 px-4 rounded mr-2"
-            >
-              Decrement
-            </button>
-            <button
-              onClick={() => handleDeleteItem(item.id)}
-              className="bg-red-500 hover:bg-red-700 active:bg-blue-800
-              text-white font-bold py-2 px-4 rounded mt-2"
-            >
-              Delete
-            </button>
+            <p className="text-lg font-semibold mb-2">{item.title}</p>
+            <p className="text-gray-600 mb-2">Price: {item.price} {'រៀល'}</p>
+            <p className="text-gray-600 mb-2">Quantity: {item.quantity || 1}</p>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => handleIncrementQuantity(item.id)}
+                className="bg-green-500 hover:bg-green-700 active:bg-blue-800
+                text-white font-bold py-2 px-4 rounded"
+              >
+                Increment
+              </button>
+              <button
+                onClick={() => handleDecrementQuantity(item.id)}
+                className="bg-yellow-500 hover:bg-yellow-700 active:bg-blue-800
+                text-white font-bold py-2 px-4 rounded"
+              >
+                Decrement
+              </button>
+              <button
+                onClick={() => handleDeleteItem(item.id)}
+                className="bg-red-500 hover:bg-red-700 text-white active:bg-blue-800
+                font-bold py-2 px-4 rounded"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         ))}
       </div>
-      <p>Total Price: {total} {'រៀល'}</p>
+      <p className="text-xl font-semibold mt-4">Total Price: {total} {'រៀល'}</p>
     </div>
   );
 }
