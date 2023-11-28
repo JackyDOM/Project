@@ -5,6 +5,7 @@ import { db } from '../firebase';
 function HomeCategory() {
   const [documents, setDocuments] = useState([]);
   const [openDescriptionIndex, setOpenDescriptionIndex] = useState(null);
+  const [addedToCart, setAddedToCart] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,11 +33,29 @@ function HomeCategory() {
     setOpenDescriptionIndex((prevIndex) => (prevIndex === index ? null : index));
   };
 
-  const addToCart = async (document) => {
+  const addToCart = async (document, index) => {
     try {
       const cartsCollectionRef = collection(db, 'Carts');
-      await addDoc(cartsCollectionRef, document);
-      alert('Item added to cart!');
+    
+      // Check if the item is already in the cart
+      const querySnapshot = await getDocs(cartsCollectionRef);
+      const isItemInCart = querySnapshot.docs.some((doc) => {
+        const cartItem = doc.data();
+        return cartItem.title === document.title; // Assuming 'title' is a unique identifier for the item
+      });
+
+      if (!isItemInCart) {
+        // If not in the cart, add it
+        await addDoc(cartsCollectionRef, document);
+
+        // Update state to mark the item as added to the cart
+        setAddedToCart((prev) => [...prev, index]);
+
+        alert('Item added to cart!');
+      } else {
+        // If already in the cart, show a message or handle as needed
+        alert('Item already added to cart!');
+      }
     } catch (error) {
       console.error('Error adding item to cart:', error);
     }
@@ -65,11 +84,12 @@ function HomeCategory() {
             <p className="font-semibold text-lg mb-2">Title: {document.title}</p>
             <p className="text-gray-600 mb-4">Price: {document.price}</p>
             <button
-              onClick={() => addToCart(document)}
+              onClick={() => addToCart(document, index)}
+              disabled={addedToCart.includes(index)}
               className="bg-blue-500 hover:bg-blue-700 active:bg-blue-800 text-white font-bold 
                 py-2 px-4 rounded mt-2 focus:outline-none focus:ring focus:border-blue-300"
             >
-              Add to Cart
+              {addedToCart.includes(index) ? 'Added to Cart' : 'Add to Cart'}
             </button>
           </div>
         ))}
