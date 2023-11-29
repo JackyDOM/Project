@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import Help from './Homepage/Help';
 import Contact from './Homepage/Contact';
 import Carts from './Homepage/Carts';
+import Payment from './Homepage/Payment';
 //import Account from './Homepage/Account';
 
 function App() {
@@ -28,6 +29,9 @@ function App() {
             </Route>*/}
             <Route exact path="/carts">
               <Carts />
+            </Route>
+            <Route exact path="/payment">
+              <Payment />
             </Route>
           </Switch>
         </div>

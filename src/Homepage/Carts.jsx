@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { Link } from 'react-router-dom';
 
 function Carts() {
   const [cart, setCart] = useState([]);
@@ -117,6 +118,11 @@ function Carts() {
         ))}
       </div>
       <p className="text-xl font-semibold mt-4">Total Price: {total} {'រៀល'}</p>
+      <Link to="/payment">
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Pay Total Price
+        </button>
+      </Link>
     </div>
   );
 }
