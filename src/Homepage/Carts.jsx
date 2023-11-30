@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
-import { Link } from 'react-router-dom';
+import Payment from './Payment';
 
-function Carts() {
+const Carts = () => {
   const [cart, setCart] = useState([]);
+  const [showPayment, setShowPayment] = useState(false);
 
   useEffect(() => {
     const fetchCartData = async () => {
@@ -77,6 +78,24 @@ function Carts() {
 
   const total = cart.reduce((acc, item) => acc + parseInt(item.price, 10) * (item.quantity || 1), 0);
 
+  const handlePaymentDone = async () => {
+    try {
+      // Remove the items from the Firebase collection one by one
+      for (const item of cart) {
+        const cartItemRef = doc(db, 'Carts', item.id);
+        await deleteDoc(cartItemRef);
+        console.log(`Item with ID ${item.id} deleted from cart.`);
+      }
+
+      // Clear the cart and update any other state as needed
+      setCart([]);
+      setShowPayment(false);
+      // Additional logic if needed after payment is done
+    } catch (error) {
+      console.error('Error deleting items from cart:', error);
+    }
+  };
+
   return (
     <div className="container mx-auto my-8 p-4 bg-white shadow-md">
       <h2 className="text-3xl font-semibold mb-4">Shopping Cart</h2>
@@ -118,11 +137,17 @@ function Carts() {
         ))}
       </div>
       <p className="text-xl font-semibold mt-4">Total Price: {total} {'រៀល'}</p>
-      <Link to="/payment">
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Pay Total Price
+      {cart.length > 0 && (
+        <button
+          onClick={() => setShowPayment(true)}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Pay Price
         </button>
-      </Link>
+      )}
+      {showPayment && (
+        <Payment onPaymentDone={handlePaymentDone} />
+      )}
     </div>
   );
 }
